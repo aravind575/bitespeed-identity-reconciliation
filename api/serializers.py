@@ -15,8 +15,9 @@ class ContactSerializer(serializers.ModelSerializer):
         phone_number = validated_data.get('phoneNumber')
         email = validated_data.get('email')
 
-        if Contact.objects.filter(phoneNumber=phone_number, email=email).exists():
-            return None
+        exact_match = Contact.objects.filter(phoneNumber=phone_number, email=email).first()
+        if exact_match:
+            return exact_match
         
         pMatch = Contact.objects.filter(phoneNumber=phone_number).order_by('-createdAt').first() if phone_number else None
         eMatch = Contact.objects.filter(email=email).order_by('-createdAt').first() if phone_number else None
@@ -27,7 +28,7 @@ class ContactSerializer(serializers.ModelSerializer):
                 other.linkedId = target.id
                 other.linkPrecedence = 'secondary'
                 other.save(update_fields=['linkedId', 'linkedPrecedence'])
-                return None
+                return other
         
         target = pMatch if pMatch else eMatch
 
