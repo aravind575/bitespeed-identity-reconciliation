@@ -11,4 +11,4 @@ class Contact(models.Model):
     deletedAt = models.DateTimeField(null=True)
 
     def __str__(self):
-        return f"Contact {self.id}"
+        return f"{self.linkPrecedence} Contact - {self.id}"
