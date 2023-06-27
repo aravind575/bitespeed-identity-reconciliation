@@ -2,10 +2,11 @@ from django.db import models
 
 
 class Contact(models.Model):
+    id = models.BigAutoField(primary_key=True, unique=True)
     phoneNumber = models.CharField(max_length=10, null=True)
     email = models.EmailField(max_length=254, null=True)
     linkedId = models.BigIntegerField(null=True)
-    linkPrecedence = models.CharField(max_length=10, choices=[("secondary", "Secondary"), ("primary", "Primary")])
+    linkPrecedence = models.CharField(max_length=10, choices=[("secondary", "Secondary"), ("primary", "Primary")], default='primary')
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     deletedAt = models.DateTimeField(null=True)
