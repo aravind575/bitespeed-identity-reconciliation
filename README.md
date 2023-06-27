@@ -2,6 +2,15 @@
 
 This repository contains the bitespeed-identity-reconciliation Django project that can be easily set up and run using Docker.
 
+## API Documentation
+
+API Documentation is hosted locally - application should be run first
+
+- [API Schema](http://localhost:8000/api/schema/)
+- [Swagger Documentation](http://localhost:8000/api/schema/swagger-ui/)
+- [ReDoc Documentation](http://localhost:8000/api/schema/redoc/)
+
+
 ## Prerequisites
 
 Make sure you have the following tools installed on your system:
@@ -29,5 +38,6 @@ Follow these steps to set up and run the Django project:
    ```bash
    docker run -p 8000:8000 bitespeed-identity-reconciliation
 
-
-
+- Now the application will be live on http://localhost:8000/
+- Please visit the Documentation for schema and api contracts
+- [Task Endpoint](http://localhost:8000/api/identity/)
