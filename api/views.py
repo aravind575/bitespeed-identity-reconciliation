@@ -23,14 +23,16 @@ class IdentityView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # pass the data to serializer which saves to db following given constraints
-        entry = ContactSerializer(data={
+        db_operation = ContactSerializer(data={
             "phoneNumber": phoneNumber,
-            "email": email
+            "email": email,
         })
-        entry.is_valid()
-        entry.save()
+        db_operation.is_valid(raise_exception=True)
+        entry = db_operation.save()
 
         contactData = ContactListSerializer(entry).data
+        contactData.pop('ll_query', None)
+        print(contactData)
 
         return Response({
             "contact": contactData
