@@ -2,7 +2,7 @@
 
 This repository contains the bitespeed-identity-reconciliation Django project that can be easily set up and run using Docker.
 
-## Documentation
+## API Documentation
 
 API Documentation is hosted locally - application should be run first
 
