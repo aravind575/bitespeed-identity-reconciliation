@@ -9,12 +9,13 @@ RUN mkdir -p $DockerHOME
 # where your code lives  
 WORKDIR $DockerHOME
 
-# install dependencies  
+# upgrade pip 
 RUN pip install --upgrade pip
 
 # copy whole project to your docker home directory. 
 COPY . $DockerHOME  
 
+# install dependencies
 RUN pip install -r requirements.txt
 
 # port where the Django app runs  
