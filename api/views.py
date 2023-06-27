@@ -30,9 +30,8 @@ class IdentityView(APIView):
         db_operation.is_valid(raise_exception=True)
         entry = db_operation.save()
 
+        # generate response data
         contactData = ContactListSerializer(entry).data
-        contactData.pop('ll_query', None)
-        print(contactData)
 
         return Response({
             "contact": contactData
