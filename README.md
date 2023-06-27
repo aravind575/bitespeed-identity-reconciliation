@@ -40,4 +40,4 @@ Follow these steps to set up and run the Django project:
 
 Now the application will be live on http://localhost:8000/
 Please visit the Documentation for schema and api contracts
-[Task Endpoint - http://localhost:8000/identity/](http://localhost:8000/identity/)
+[Task Endpoint](http://localhost:8000/api/identity/)
