@@ -22,64 +22,82 @@ class ContactSerializer(serializers.ModelSerializer):
         pMatch = Contact.objects.filter(phoneNumber=phone_number).order_by('-createdAt').first() if phone_number else None
         eMatch = Contact.objects.filter(email=email).order_by('-createdAt').first() if phone_number else None
 
+        if pMatch is None and eMatch is None:
+            return super().create(validated_data)
+
         if pMatch and eMatch:
             if pMatch.linkPrecedence == eMatch.linkPrecedence == 'primary':
-                target, other = pMatch, eMatch if pMatch.createdAt < eMatch.createdAt else eMatch, pMatch
+                target, other = (pMatch, eMatch) if pMatch.createdAt < eMatch.createdAt else (eMatch, pMatch)
                 other.linkedId = target.id
                 other.linkPrecedence = 'secondary'
-                other.save(update_fields=['linkedId', 'linkedPrecedence'])
+                other.save(update_fields=['linkedId', 'linkPrecedence'])
                 return other
+            return pMatch
         
         target = pMatch if pMatch else eMatch
+        print(pMatch, eMatch, target)
 
         validated_data['linkedId'] = target.id
-        validated_data['linkedPrecedence'] = 'secondary'
+        validated_data['linkPrecedence'] = 'secondary'
 
         return super().create(validated_data)
 
 
 class ContactListSerializer(serpy.Serializer):
-    ll_query = serpy.MethodField()
     primaryContactId = serpy.MethodField()
     emails = serpy.MethodField()
     phoneNumbers = serpy.MethodField()
     secondaryContactIds = serpy.MethodField()
 
-    def get_query(self, obj):
-        linkedList = []
-        node = obj
-        
-        while node.linkedPrecedence != 'primary':
-            linkedList.append(node)
-            node = Contact.objects.get(id=node.linkedId)
-        
-        linkedList.append(node)
-        return linkedList
-    
-    def get_ll_query(self, obj):
-        return self.get_query(obj)
-
     def get_primaryContactId(self, obj):
-        primary_contact = self.ll_query[-1]
-        return primary_contact.id
+        node = obj
+        while node.linkPrecedence != 'primary':
+            node = Contact.objects.get(id=node.linkedId)
+        return node.id
 
     def get_emails(self, obj):
         emails = set()
-        for q in self.ll_query:
-            email = q.email
-            emails.add(email)
+
+        if not hasattr(self, 'primaryContactId'):
+            self.primaryContactId = self.get_primaryContactId(obj)
+        
+        emails.add(Contact.objects.get(id=self.primaryContactId).email)
+
+        down_nodes = Contact.objects.filter(linkedId=self.primaryContactId)
+        while down_nodes.first():
+            nxt = []
+            for nde in down_nodes:
+                emails.add(nde.email)
+                nxt.append(nde.id)
+            down_nodes = Contact.objects.filter(linkedId__in=nxt)
+
         return list(emails)
 
     def get_phoneNumbers(self, obj):
-        phoneNumbers = set()
-        for q in self.ll_query:
-            phoneNumber = q.phoneNumber
-            phoneNumbers.add(phoneNumber)
-        return list(phoneNumber)
+        phones = set()
+
+        phones.add(Contact.objects.get(id=self.primaryContactId).phoneNumber)
+
+        down_nodes = Contact.objects.filter(linkedId=self.primaryContactId)
+        while down_nodes.first():
+            nxt = []
+            for nde in down_nodes:
+                phones.add(nde.phoneNumber)
+                nxt.append(nde.id)
+            down_nodes = Contact.objects.filter(linkedId__in=nxt)
+
+        return list(phones)
+
 
     def get_secondaryContactIds(self, obj):
-        secondaryIds = []
-        for q in self.ll_query:
-            secondaryIds.append(q.id)
-        secondaryIds.remove(self.primaryContactId)
-        return secondaryIds
+        contacts = []
+
+        down_nodes = Contact.objects.filter(linkedId=self.primaryContactId)
+        while down_nodes.first():
+            nxt = []
+            for nde in down_nodes:
+                nxt.append(nde.id)
+            contacts += nxt
+            down_nodes = Contact.objects.filter(linkedId__in=nxt)
+
+        return contacts
