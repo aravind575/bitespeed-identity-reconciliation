@@ -30,7 +30,8 @@ class IdentityView(APIView):
                 "contact": serializers.DictField(default={
                     "primaryContatctId": 7,
 			        "emails": [],
-			        "phoneNumbers": []
+			        "phoneNumbers": [],
+                    "secondaryContactIds": []
                 })
             }
         )
