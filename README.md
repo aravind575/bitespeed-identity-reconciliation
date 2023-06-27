@@ -38,6 +38,6 @@ Follow these steps to set up and run the Django project:
    ```bash
    docker run -p 8000:8000 bitespeed-identity-reconciliation
 
-Now the application will be live on http://localhost:8000/
-Please visit the Documentation for schema and api contracts
-[Task Endpoint](http://localhost:8000/api/identity/)
+- Now the application will be live on http://localhost:8000/
+- Please visit the Documentation for schema and api contracts
+- [Task Endpoint](http://localhost:8000/api/identity/)
